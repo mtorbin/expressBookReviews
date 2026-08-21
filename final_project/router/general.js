@@ -27,7 +27,7 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/', async function (req, res) {
   try {
-    // const response = await axios.get({books});
+    // const response = await axios.get('http://localhost:5000');
     let response = await Promise.resolve(books);
     res.send(JSON.stringify({ response }, null, 4));
   } catch (error) {
@@ -35,38 +35,119 @@ public_users.get('/', async function (req, res) {
   }
 });
 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  // Retrieve the isbn parameter from the request URL and send the corresponding book's details
+// Get book details based on ISBN - synchronous and 2 async methods
+
+// public_users.get('/isbn/:isbn', function (req, res) {
+//   // Retrieve the isbn parameter from the request URL and send the corresponding book's details
+//   const isbn = req.params.isbn;
+//   res.send(books[isbn]);
+// });
+
+// public_users.get('/isbn/:isbn', async function (req, res) {
+//   try {
+//     // Retrieve the isbn parameter from the request URL and send the corresponding book's details
+//     const isbn = req.params.isbn;
+//     let response = await Promise.resolve(books[isbn]);
+//     res.send(JSON.stringify({ response }, null, 4));
+//   } catch (error) {
+//     res.status(500).send(JSON.stringify({ error: "Could not fetch the book" }, null, 4));
+//   }
+// });
+
+public_users.get('/isbn/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
-  res.send(books[isbn]);
- });
+
+  const getBookByISBN = () => {
+    return new Promise((resolve, reject) => {
+      const book = books[isbn];
+      resolve(book);
+    });
+  };
+
+  try {
+    const book = await getBookByISBN();
+    if (book)
+      res.send(book);
+    else
+      res.send("There is no such book for this ISBN.");
+  } catch (err) {
+    res.status(500).send("Something went wrong.");
+  }
+});
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
-  let foundByAuthor = [];
-  const keys = Object.keys(books);
-  for(const key of keys) {
-    if(books[key].author === author)
-      foundByAuthor.push(books[key]);
-  }
 
-  if(foundByAuthor.length > 0)
-    res.send(foundByAuthor);
-  else
-    res.send("There is no such author.");
+// public_users.get('/author/:author',function (req, res) {
+//   const author = req.params.author;
+//   let foundByAuthor = [];
+//   const keys = Object.keys(books);
+//   for(const key of keys) {
+//     if(books[key].author === author)
+//       foundByAuthor.push(books[key]);
+//   }
+
+//   if(foundByAuthor.length > 0)
+//     res.send(foundByAuthor);
+//   else
+//     res.send("There is no such author.");
+// });
+
+public_users.get('/author/:author', async function (req, res) {
+  const author = req.params.author;
+
+  const getBooksByAuthor = () => {
+    return new Promise((resolve, reject) => {
+      const keys = Object.keys(books);
+      const foundByAuthor = keys
+        .filter(key => books[key].author === author)
+        .map(key => books[key]);
+      resolve(foundByAuthor);
+    });
+  };
+
+  try {
+    const foundByAuthor = await getBooksByAuthor();
+    if (foundByAuthor.length > 0)
+      res.send(foundByAuthor);
+    else
+      res.send("There is no such author.");
+  } catch (err) {
+    res.status(500).send("Something went wrong.");
+  }
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+
+// public_users.get('/title/:title',function (req, res) {
+//   const title = req.params.title;
+//   const keys = Object.keys(books);
+//   for(const key of keys) {
+//     if(books[key].title === title)
+//       return res.send(books[key]);
+//   }
+//   res.send("There is no such title.");
+// });
+
+public_users.get('/title/:title', async function (req, res) {
   const title = req.params.title;
-  const keys = Object.keys(books);
-  for(const key of keys) {
-    if(books[key].title === title)
-      return res.send(books[key]);
+
+  const getBookByTitle = () => {
+    return new Promise((resolve, reject) => {
+      const keys = Object.keys(books);
+      const found = keys.find(key => books[key].title === title);
+      resolve(found ? books[found] : null);
+    });
+  };
+
+  try {
+    const book = await getBookByTitle();
+    if (book)
+      res.send(book);
+    else
+      res.send("There is no such title.");
+  } catch (err) {
+    res.status(500).send("Something went wrong.");
   }
-  res.send("There is no such title.");
 });
 
 //  Get book review

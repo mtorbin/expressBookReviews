@@ -8,7 +8,8 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/customer",session({secret:"fingerprint_customer",resave: false, saveUninitialized: false, cookie: { secure: false, httpOnly: true, sameSite: 'lax' }}));
+// app.use("/customer",session({secret:"fingerprint_customer",resave: false, saveUninitialized: false, cookie: { secure: false, httpOnly: true, sameSite: 'lax' }}));
+app.use("/customer",session({secret:"fingerprint_customer",resave: false, saveUninitialized: false }));
 
 app.use("/customer/auth/*", function (req,res,next){
   // Check if user is logged in and has valid access token
