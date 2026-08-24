@@ -13,7 +13,6 @@ app.use("/customer",session({secret:"fingerprint_customer",resave: false, saveUn
 
 app.use("/customer/auth/*", function (req,res,next){
   // Check if user is logged in and has valid access token
-  console.log(req.session.authorization);       // undefined
   if (req.session.authorization) {
     let token = req.session.authorization['accessToken'];
 

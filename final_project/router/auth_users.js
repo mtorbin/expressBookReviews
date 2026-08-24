@@ -53,7 +53,6 @@ regd_users.post("/login", (req,res) => {
         req.session.authorization = {
             accessToken, username
         }
-        console.log(req.session.authorization);
         return res.status(200).send("User successfully logged in");
     } else {
         return res.status(208).json({ message: "Invalid Login. Check username and password" });
@@ -67,11 +66,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
     books[isbn].reviews[req.session.authorization.username] = review;
 
-    return res.json({
-        isbn: isbn,
-        review: review,
-        allReviews: books[isbn].reviews
-    });
+    return res.send("Review for the book with ISBN " + isbn + " added by user " + req.session.authorization.username);
+
+    // return res.json({
+    //     isbn: isbn,
+    //     review: review,
+    //     allReviews: books[isbn].reviews
+    // });
 });
 
 // Delete a book review
@@ -80,10 +81,12 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 
     delete books[isbn].reviews[req.session.authorization.username];
 
-    return res.json({
-        isbn: isbn,
-        allReviews: books[isbn].reviews
-    });
+    return res.send("Review for the book with ISBN " + isbn + " deleted by user " + req.session.authorization.username);
+
+    // return res.json({
+    //     isbn: isbn,
+    //     allReviews: books[isbn].reviews
+    // });
 });
 
 module.exports.authenticated = regd_users;
