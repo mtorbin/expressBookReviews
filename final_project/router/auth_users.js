@@ -60,19 +60,16 @@ regd_users.post("/login", (req,res) => {
 });
 
 // Add a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
-    const isbn = req.params.isbn;
+regd_users.put("/auth/review", (req, res) => {
+    const isbn = req.query.isbn;
     const review = req.query.review;
 
     books[isbn].reviews[req.session.authorization.username] = review;
 
-    return res.send("Review for the book with ISBN " + isbn + " added by user " + req.session.authorization.username);
-
-    // return res.json({
-    //     isbn: isbn,
-    //     review: review,
-    //     allReviews: books[isbn].reviews
-    // });
+    return res.json({
+        message: "Review for the book with ISBN " + isbn + " added by user " + req.session.authorization.username,
+        reviews: books[isbn].reviews
+    });
 });
 
 // Delete a book review
@@ -81,12 +78,10 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 
     delete books[isbn].reviews[req.session.authorization.username];
 
-    return res.send("Review for the book with ISBN " + isbn + " deleted by user " + req.session.authorization.username);
-
-    // return res.json({
-    //     isbn: isbn,
-    //     allReviews: books[isbn].reviews
-    // });
+    return res.json({
+        message: "Review for the book with ISBN " + isbn + " deleted by user " + req.session.authorization.username,
+        reviews: books[isbn].reviews
+    });
 });
 
 module.exports.authenticated = regd_users;

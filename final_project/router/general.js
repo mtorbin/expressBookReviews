@@ -153,7 +153,10 @@ public_users.get('/title/:title', async function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   const isbn = req.params.isbn;
-  res.send(books[isbn].reviews);
+  if(isbn)
+    res.send(books[isbn].reviews);
+  else
+    res.send("There is no such ISBN.");
 });
 
 module.exports.general = public_users;
